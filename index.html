@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angel Number Calculator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #06080c;
+    --bg-card: #0c1018;
+    --border: rgba(255,255,255,0.06);
+    --border-hover: rgba(255,255,255,0.12);
+    --text: #e4e8f1;
+    --text-muted: #6b7394;
+    --text-dim: #3d4566;
+    --primary: #6C9CFF;
+    --gradient: linear-gradient(135deg, #6C9CFF 0%, #c084fc 50%, #f472b6 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    margin-bottom: 40px;
+    letter-spacing: 0.05em;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 32px;
+    backdrop-filter: blur(20px);
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: -0.02em;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+
+  .form-group {
+    margin-top: 32px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .date-inputs {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr 0.8fr;
+    gap: 10px;
+  }
+
+  input {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.1rem;
+    text-align: center;
+    outline: none;
+    transition: all 0.3s;
+    -moz-appearance: textfield;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+  input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(108,156,255,0.1);
+  }
+
+  input::placeholder {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+
+  .btn {
+    width: 100%;
+    margin-top: 24px;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: var(--gradient);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 30px rgba(108,156,255,0.25);
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  /* Result */
+  .result {
+    display: none;
+    margin-top: 32px;
+    text-align: center;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .result.show { display: block; }
+
+  .result-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .result-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-top: 8px;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .result-master {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 14px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(192,132,252,0.1);
+    color: #c084fc;
+    border: 1px solid rgba(192,132,252,0.2);
+  }
+
+  .result-meaning {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    text-align: left;
+  }
+
+  .result-meaning h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .result-meaning p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .calc-steps {
+    margin-top: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  .error {
+    color: #f472b6;
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .error.show { display: block; }
+
+  .footer {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+
+  .footer a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">MochiBullet Tools</div>
+
+  <div class="card">
+    <h1>Angel Number</h1>
+    <p class="subtitle">生年月日からあなたのエンジェルナンバー<br>（ライフパスナンバー）を計算します</p>
+
+    <div class="form-group">
+      <label>生年月日</label>
+      <div class="date-inputs">
+        <input type="number" id="year" placeholder="1990" min="1900" max="2099">
+        <input type="number" id="month" placeholder="1" min="1" max="12">
+        <input type="number" id="day" placeholder="1" min="1" max="31">
+      </div>
+    </div>
+
+    <p class="error" id="error">正しい生年月日を入力してください</p>
+
+    <button class="btn" onclick="calculate()">計算する</button>
+
+    <div class="result" id="result">
+      <p class="result-label">あなたのエンジェルナンバーは</p>
+      <div class="result-number" id="number"></div>
+      <div id="masterBadge"></div>
+      <div class="calc-steps" id="steps"></div>
+      <div class="result-meaning" id="meaning"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://mochi-bullet-magazine.vercel.app/" target="_blank">MochiBullet Magazine</a>
+  </div>
+</div>
+
+<script>
+const meanings = {
+  1: { title: "1 — リーダーシップ", text: "独立心が強く、リーダーシップを持つ人。新しいことを始める力があり、パイオニア精神で道を切り拓きます。自信を持って前に進んでください。" },
+  2: { title: "2 — 調和・協力", text: "協調性に優れ、人との繋がりを大切にする人。直感力が鋭く、周囲のバランスを取る能力があります。パートナーシップが幸運の鍵です。" },
+  3: { title: "3 — 創造性・表現", text: "創造力と表現力に溢れた人。コミュニケーション能力が高く、芸術的な才能を持っています。楽観的なエネルギーで周囲を明るくします。" },
+  4: { title: "4 — 安定・基盤", text: "堅実で信頼できる人。コツコツと努力を積み重ね、しっかりとした基盤を築きます。実務能力が高く、組織の柱となる存在です。" },
+  5: { title: "5 — 変化・自由", text: "自由を愛し、変化を恐れない人。冒険心が旺盛で、多様な経験を通じて成長します。柔軟性と適応力が武器です。" },
+  6: { title: "6 — 愛・責任", text: "愛情深く、責任感の強い人。家族や周囲の人を守り、支える力があります。美意識が高く、調和のとれた環境を作り出します。" },
+  7: { title: "7 — 探究・知恵", text: "深い思考力と分析力を持つ人。真理を探究し、精神的な成長を重視します。直感と知性のバランスが取れた知恵者です。" },
+  8: { title: "8 — 豊かさ・成功", text: "目標達成力と実行力に優れた人。物質的な豊かさと精神的な充実の両方を追求します。ビジネスセンスがあり、大きな成功を収める力があります。" },
+  9: { title: "9 — 完成・奉仕", text: "広い視野と深い思いやりを持つ人。人道主義的な精神で、社会に貢献する使命があります。すべてを包み込む愛の力を持っています。" },
+  11: { title: "11 — マスターナンバー：直感", text: "非常に高い直感力とスピリチュアルな感性を持つ特別な人。インスピレーションで人を導くビジョナリーです。大きな使命を持っています。" },
+  22: { title: "22 — マスターナンバー：建設者", text: "壮大なビジョンを現実に変える力を持つ特別な人。マスタービルダーと呼ばれ、理想を具体的な形にする稀有な能力があります。" },
+  33: { title: "33 — マスターナンバー：マスターティーチャー", text: "無条件の愛と深い慈悲を持つ特別な人。導き手として人々を癒し、高い次元へと導く使命を持っています。最も崇高なマスターナンバーです。" },
+};
+
+function calculate() {
+  const y = document.getElementById('year').value;
+  const m = document.getElementById('month').value;
+  const d = document.getElementById('day').value;
+  const err = document.getElementById('error');
+  const result = document.getElementById('result');
+
+  err.classList.remove('show');
+  result.classList.remove('show');
+
+  if (!y || !m || !d) { err.classList.add('show'); return; }
+
+  const year = parseInt(y), month = parseInt(m), day = parseInt(d);
+  if (year < 1900 || year > 2099 || month < 1 || month > 12 || day < 1 || day > 31) {
+    err.classList.add('show'); return;
+  }
+
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    err.classList.add('show'); return;
+  }
+
+  const digits = `${year}${String(month).padStart(2,'0')}${String(day).padStart(2,'0')}`;
+  const stepsArr = [];
+  let sum = digits.split('').reduce((a, c) => a + parseInt(c), 0);
+  stepsArr.push(`${digits.split('').join(' + ')} = ${sum}`);
+
+  while (sum > 9 && sum !== 11 && sum !== 22 && sum !== 33) {
+    const prev = sum;
+    sum = String(prev).split('').reduce((a, c) => a + parseInt(c), 0);
+    stepsArr.push(`${String(prev).split('').join(' + ')} = ${sum}`);
+  }
+
+  document.getElementById('number').textContent = sum;
+  document.getElementById('steps').innerHTML = stepsArr.join('<br>');
+
+  const isMaster = [11, 22, 33].includes(sum);
+  document.getElementById('masterBadge').innerHTML = isMaster
+    ? `<span class="result-master">Master Number</span>` : '';
+
+  const info = meanings[sum];
+  document.getElementById('meaning').innerHTML = info
+    ? `<h3>${info.title}</h3><p>${info.text}</p>` : '';
+
+  result.classList.add('show');
+}
+
+// Enter key support
+document.querySelectorAll('input').forEach(input => {
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+});
+</script>
+</body>
+</html>
